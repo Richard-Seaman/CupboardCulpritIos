@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseDatabase
 
 class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -38,7 +39,7 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     let sliderIdentifier:String = "SliderCell"
     
     // Firebase values
-    
+    var ref: DatabaseReference!
     
     
     override func viewDidLoad() {
@@ -50,6 +51,8 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         // Apply the row height
         self.tableView.rowHeight = UITableViewAutomaticDimension;
         self.tableView.estimatedRowHeight = 44.0;
+        
+        ref = Database.database().reference()
         
     }
 

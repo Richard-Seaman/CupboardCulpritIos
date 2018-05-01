@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 48;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3E94823BD98EF6D900D6AFA9 /* Pods_Cupboard_Culprit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7DD99FDC5173CD52BEC06F3 /* Pods_Cupboard_Culprit.framework */; };
 		9BB037FF209904DD00E7AC52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB037FE209904DD00E7AC52 /* AppDelegate.swift */; };
 		9BB03801209904DD00E7AC52 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB03800209904DD00E7AC52 /* FirstViewController.swift */; };
 		9BB03803209904DD00E7AC52 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB03802209904DD00E7AC52 /* SettingsVC.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		516DA542D6D82CF4414D9E75 /* Pods-Cupboard Culprit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Cupboard Culprit.release.xcconfig"; path = "Pods/Target Support Files/Pods-Cupboard Culprit/Pods-Cupboard Culprit.release.xcconfig"; sourceTree = "<group>"; };
 		9BB037FB209904DD00E7AC52 /* Cupboard Culprit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Cupboard Culprit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BB037FE209904DD00E7AC52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9BB03800209904DD00E7AC52 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
@@ -28,6 +30,8 @@
 		9BB0380C209904DE00E7AC52 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9BB03812209906B200E7AC52 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		9BB038142099161500E7AC52 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9E631CFCAA1CC286F90BF8B3 /* Pods-Cupboard Culprit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Cupboard Culprit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Cupboard Culprit/Pods-Cupboard Culprit.debug.xcconfig"; sourceTree = "<group>"; };
+		E7DD99FDC5173CD52BEC06F3 /* Pods_Cupboard_Culprit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Cupboard_Culprit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,17 +39,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E94823BD98EF6D900D6AFA9 /* Pods_Cupboard_Culprit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		335DE0BD25E3EF6638B764BA /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9E631CFCAA1CC286F90BF8B3 /* Pods-Cupboard Culprit.debug.xcconfig */,
+				516DA542D6D82CF4414D9E75 /* Pods-Cupboard Culprit.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		4418F37B9B7A135995CFCB99 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E7DD99FDC5173CD52BEC06F3 /* Pods_Cupboard_Culprit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9BB037F2209904DD00E7AC52 = {
 			isa = PBXGroup;
 			children = (
 				9BB037FD209904DD00E7AC52 /* Cupboard Culprit */,
 				9BB037FC209904DD00E7AC52 /* Products */,
+				335DE0BD25E3EF6638B764BA /* Pods */,
+				4418F37B9B7A135995CFCB99 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -80,9 +104,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9BB0380F209904DE00E7AC52 /* Build configuration list for PBXNativeTarget "Cupboard Culprit" */;
 			buildPhases = (
+				76DC514C57839136D300F904 /* [CP] Check Pods Manifest.lock */,
 				9BB037F7209904DD00E7AC52 /* Sources */,
 				9BB037F8209904DD00E7AC52 /* Frameworks */,
 				9BB037F9209904DD00E7AC52 /* Resources */,
+				62C48E6C35E58A960EE7C6A4 /* [CP] Embed Pods Frameworks */,
+				D715D6A1B7EDF292BA33EF41 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -105,11 +132,12 @@
 				TargetAttributes = {
 					9BB037FA209904DD00E7AC52 = {
 						CreatedOnToolsVersion = 9.3;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
 			buildConfigurationList = 9BB037F6209904DD00E7AC52 /* Build configuration list for PBXProject "Cupboard Culprit" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -139,6 +167,54 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		62C48E6C35E58A960EE7C6A4 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Cupboard Culprit/Pods-Cupboard Culprit-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		76DC514C57839136D300F904 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		D715D6A1B7EDF292BA33EF41 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Cupboard Culprit/Pods-Cupboard Culprit-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9BB037F7209904DD00E7AC52 /* Sources */ = {
@@ -282,23 +358,20 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 		9BB03810209904DE00E7AC52 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E631CFCAA1CC286F90BF8B3 /* Pods-Cupboard Culprit.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 747FHAXMVE;
 				INFOPLIST_FILE = "Cupboard Culprit/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.richapps.Cupboard-Culprit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -308,15 +381,13 @@
 		};
 		9BB03811209904DE00E7AC52 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 516DA542D6D82CF4414D9E75 /* Pods-Cupboard Culprit.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 747FHAXMVE;
 				INFOPLIST_FILE = "Cupboard Culprit/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.richapps.Cupboard-Culprit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
