@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 import FirebaseDatabase
 
 class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
@@ -38,8 +39,46 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     // Identifiers
     let sliderIdentifier:String = "SliderCell"
     
-    // Firebase values
+    // Slider tags for reference
+    let sliderTagTimeSensorRead:Int = 10
+    let sliderTagTimeSensorUpload:Int = 11
+    let sliderTagTimeImageCapture:Int = 12
+    let sliderTagTimeImageDelay:Int = 13
+    let sliderTagTimeDisplayUpdate:Int = 14
+    let sliderTagTimeBackgroundChecks:Int = 15
+    
+    // Time Labels
+    var timeLabels:[Int: UILabel] = [Int: UILabel]()
+    
+    // Firebase
     var ref: DatabaseReference!
+    
+    // Firebase config variables (initialised to default)
+    var timeSensorRead:Int = 60
+    var timeSensorUpload:Int = 900
+    var timeImageCapture:Int = 60
+    var timeImageDelay:Int = 0
+    var timeDisplayUpdate:Int = 10
+    var timeBackgroundChecks:Int = 60
+    
+    // Max / min limits for each
+    let minTimeSensorRead:Int = 30
+    let maxTimeSensorRead:Int = 60 * 10
+    
+    let minTimeSensorUpload:Int = 60 * 5
+    let maxTimeSensorUpload:Int = 60 * 60
+    
+    let minTimeImageCapture:Int = 15
+    let maxTimeImageCapture:Int = 60 * 5
+    
+    let minTimeImageDelay:Int = 0
+    let maxTimeImageDelay:Int = 5
+    
+    let minTimeDisplayUpdate:Int = 5
+    let maxTimeDisplayUpdate:Int = 15
+    
+    let minTimeBackgroundChecks:Int = 60
+    let maxTimeBackgroundChecks:Int = 60 * 60
     
     
     override func viewDidLoad() {
@@ -54,6 +93,24 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         
         ref = Database.database().reference()
         
+        ref.child("config").observeSingleEvent(of: .value, with: { (snapshot) in
+            print(snapshot.childrenCount)
+            // Get config values
+            let config = snapshot.value as? NSDictionary
+            self.timeSensorRead = config?["time_between_sensor_reads"] as? Int ?? 60
+            self.timeSensorUpload = config?["time_between_sensor_uploads"] as? Int ?? 900
+            self.timeImageCapture = config?["time_between_image_captures"] as? Int ?? 60
+            self.timeImageDelay = config?["time_delay_bvefore_picture"] as? Int ?? 0
+            self.timeDisplayUpdate = config?["time_between_display_updates"] as? Int ?? 10
+            self.timeBackgroundChecks = config?["time_between_checks_background"] as? Int ?? 60
+            
+            // Reload the table
+            self.refresh()
+            
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -63,6 +120,28 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     func refresh() {
         self.tableView.reloadData()
+    }
+    
+    // UI Updates
+    
+    @objc func sliderFinished(slider:UISlider) {
+        switch slider.tag {
+        case self.sliderTagTimeSensorRead:
+            print("Sensor Read slider edit did end \(slider.value)")
+        default:
+            print("Unknown slider did end edit")
+        }
+    }
+    
+    @objc func sliderValueChanged(slider:UISlider) {
+        switch slider.tag {
+        case self.sliderTagTimeSensorRead:
+            print("Sensor Read slider changed \(slider.value)")
+            let rounded = roundf(slider.value / 5.0) * 5.0;
+            self.timeLabels[slider.tag]?.text = "\(Int(rounded))s"
+        default:
+            print("Unknown slider did end edit")
+        }
     }
     
     // MARK: - Tableview methods
@@ -110,17 +189,24 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 let background = cell.viewWithTag(1) as? UIView
                 let textLabel = cell.viewWithTag(2) as? UILabel
                 let slider = cell.viewWithTag(3) as? UISlider
-                let textField = cell.viewWithTag(4) as? UITextView
+                let timeLabel = cell.viewWithTag(4) as? UILabel
                 
                 // Set the elements
                 if let actTextLabel = textLabel {
                     actTextLabel.text = "Time in seconds between sensor readings. Multiple sensor readings are averaged before uploading."
                 }
-                if let actTextField = textField {
-                    
+                if let actTimeLabel = timeLabel {
+                    actTimeLabel.text = "\(self.timeSensorRead)s"
+                    self.timeLabels[self.sliderTagTimeSensorRead] = actTimeLabel
                 }
                 if let actSlider = slider {
-                    slider?.tintColor = colourDefault
+                    actSlider.tintColor = colourDefault
+                    actSlider.minimumValue = Float(self.minTimeSensorRead)
+                    actSlider.maximumValue = Float(self.maxTimeSensorRead)
+                    actSlider.value = Float(self.timeSensorRead)
+                    actSlider.tag = self.sliderTagTimeSensorRead
+                    actSlider.addTarget(self, action: #selector(sliderValueChanged(slider:)), for: [UIControlEvents.valueChanged])
+                    actSlider.addTarget(self, action: #selector(sliderFinished(slider:)), for: [UIControlEvents.touchUpInside, UIControlEvents.touchUpOutside])
                 }
                 
             case rIndexSensorUpload:
@@ -136,9 +222,6 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 // Set the elements
                 if let actTextLabel = textLabel {
                     actTextLabel.text = "Time in seconds between sensor uploads. This will be the increment between timestamps."
-                }
-                if let actTextField = textField {
-                    
                 }
                 
             default:
@@ -165,9 +248,6 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 if let actTextLabel = textLabel {
                     actTextLabel.text = "Minimum number of seconds between image captures."
                 }
-                if let actTextField = textField {
-                    
-                }
                 
             case rIndexImageDelay:
                 // Slider Row
@@ -182,9 +262,6 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 // Set the elements
                 if let actTextLabel = textLabel {
                     actTextLabel.text = "Delay in seconds between detecting the door is open and taking the picture."
-                }
-                if let actTextField = textField {
-                    
                 }
                 
             default:
@@ -211,9 +288,6 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 if let actTextLabel = textLabel {
                     actTextLabel.text = "Minimum number of seconds that each display message is shown for."
                 }
-                if let actTextField = textField {
-                    
-                }
                 
             case rIndexBackgroundCheck:
                 // Slider Row
@@ -228,9 +302,6 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 // Set the elements
                 if let actTextLabel = textLabel {
                     actTextLabel.text = "Time in seconds between checking for images to process."
-                }
-                if let actTextField = textField {
-                    
                 }
                 
             default:
