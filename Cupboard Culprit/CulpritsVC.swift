@@ -45,6 +45,9 @@ class CulpritsVC: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Set up nav bar
+        self.navigationItem.titleView = getNavImageView(UIApplication.shared.statusBarOrientation)
 
         // Set Firebase reference
         ref = Database.database().reference()

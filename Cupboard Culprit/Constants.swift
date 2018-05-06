@@ -27,3 +27,55 @@ func returnHeader(_ sender:UIView) -> UITableViewHeaderFooterView {
     
     return header
 }
+
+
+func getNavImageView(_ orientationToDisplayImageOn:UIInterfaceOrientation) -> UIImageView {
+    
+    // The navigation bar is shorter in landscape than portrait.
+    // Change the size of the nav bar image so that it stays within the bar.
+    
+    // for iPad, the same image is used for portrait and landscape
+    
+    var imageHeight:CGFloat = CGFloat()
+    var imageWidth:CGFloat = CGFloat()
+    
+    switch UIDevice.current.userInterfaceIdiom {
+        
+    case .phone:
+        // It's an iPhone
+        if (orientationToDisplayImageOn == UIInterfaceOrientation.portrait) {
+            imageHeight = 400/12
+            imageWidth = 400/12
+        }
+        else {
+            imageHeight = 400/16
+            imageWidth = 400/16
+        }
+        
+    case .pad:
+        // It's an iPad
+        imageHeight = 400/12
+        imageWidth = 400/12
+        
+    default:
+        // Uh, oh! What could it be?
+        imageHeight = 400/12
+        imageWidth = 400/12
+        
+    }
+    
+    let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: imageHeight, height: imageWidth))
+    imageView.contentMode = .scaleAspectFit
+    let image = UIImage(named: "AppIcon")
+    imageView.image = image
+    
+    if #available(iOS 11.0, *) {
+        let widthConstraint = imageView.widthAnchor.constraint(equalToConstant: imageWidth)
+        let heightConstraint = imageView.heightAnchor.constraint(equalToConstant: imageHeight)
+        heightConstraint.isActive = true
+        widthConstraint.isActive = true
+    }
+    
+    return imageView
+    
+}

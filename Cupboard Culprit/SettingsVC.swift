@@ -94,6 +94,9 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set up nav bar
+        self.navigationItem.titleView = getNavImageView(UIApplication.shared.statusBarOrientation)
+        
         // Set up the loading view
         self.loadingView.backgroundColor = colourDefault
         self.loadingLabel.text = "Syncing..."
