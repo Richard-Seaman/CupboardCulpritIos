@@ -10,8 +10,8 @@
 		3E94823BD98EF6D900D6AFA9 /* Pods_Cupboard_Culprit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7DD99FDC5173CD52BEC06F3 /* Pods_Cupboard_Culprit.framework */; };
 		9B08CE7F209A475E00A1EF79 /* SignInVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B08CE7E209A475E00A1EF79 /* SignInVC.swift */; };
 		9B08CE85209CDAD300A1EF79 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9B08CE84209CDAD300A1EF79 /* GoogleService-Info.plist */; };
+		9B08CE87209DA9DA00A1EF79 /* CulpritsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B08CE86209DA9DA00A1EF79 /* CulpritsVC.swift */; };
 		9BB037FF209904DD00E7AC52 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB037FE209904DD00E7AC52 /* AppDelegate.swift */; };
-		9BB03801209904DD00E7AC52 /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB03800209904DD00E7AC52 /* FirstViewController.swift */; };
 		9BB03803209904DD00E7AC52 /* SettingsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BB03802209904DD00E7AC52 /* SettingsVC.swift */; };
 		9BB03806209904DD00E7AC52 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BB03804209904DD00E7AC52 /* Main.storyboard */; };
 		9BB03808209904DE00E7AC52 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9BB03807209904DE00E7AC52 /* Assets.xcassets */; };
@@ -23,9 +23,9 @@
 		516DA542D6D82CF4414D9E75 /* Pods-Cupboard Culprit.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Cupboard Culprit.release.xcconfig"; path = "Pods/Target Support Files/Pods-Cupboard Culprit/Pods-Cupboard Culprit.release.xcconfig"; sourceTree = "<group>"; };
 		9B08CE7E209A475E00A1EF79 /* SignInVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInVC.swift; sourceTree = "<group>"; };
 		9B08CE84209CDAD300A1EF79 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9B08CE86209DA9DA00A1EF79 /* CulpritsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CulpritsVC.swift; sourceTree = "<group>"; };
 		9BB037FB209904DD00E7AC52 /* Cupboard Culprit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Cupboard Culprit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BB037FE209904DD00E7AC52 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		9BB03800209904DD00E7AC52 /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
 		9BB03802209904DD00E7AC52 /* SettingsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsVC.swift; sourceTree = "<group>"; };
 		9BB03805209904DD00E7AC52 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9BB03807209904DE00E7AC52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -88,14 +88,14 @@
 			children = (
 				9B08CE84209CDAD300A1EF79 /* GoogleService-Info.plist */,
 				9BB037FE209904DD00E7AC52 /* AppDelegate.swift */,
-				9BB03800209904DD00E7AC52 /* FirstViewController.swift */,
+				9BB03812209906B200E7AC52 /* Constants.swift */,
+				9B08CE7E209A475E00A1EF79 /* SignInVC.swift */,
+				9B08CE86209DA9DA00A1EF79 /* CulpritsVC.swift */,
 				9BB03802209904DD00E7AC52 /* SettingsVC.swift */,
 				9BB03804209904DD00E7AC52 /* Main.storyboard */,
 				9BB03807209904DE00E7AC52 /* Assets.xcassets */,
 				9BB03809209904DE00E7AC52 /* LaunchScreen.storyboard */,
 				9BB0380C209904DE00E7AC52 /* Info.plist */,
-				9BB03812209906B200E7AC52 /* Constants.swift */,
-				9B08CE7E209A475E00A1EF79 /* SignInVC.swift */,
 			);
 			path = "Cupboard Culprit";
 			sourceTree = "<group>";
@@ -224,9 +224,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B08CE87209DA9DA00A1EF79 /* CulpritsVC.swift in Sources */,
 				9BB03803209904DD00E7AC52 /* SettingsVC.swift in Sources */,
 				9BB037FF209904DD00E7AC52 /* AppDelegate.swift in Sources */,
-				9BB03801209904DD00E7AC52 /* FirstViewController.swift in Sources */,
 				9BB03813209906B200E7AC52 /* Constants.swift in Sources */,
 				9B08CE7F209A475E00A1EF79 /* SignInVC.swift in Sources */,
 			);

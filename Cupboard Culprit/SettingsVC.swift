@@ -14,15 +14,20 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var loadingLabel: UILabel!
+    @IBOutlet weak var loadingView: UIView!
+    
     // Table Variables
     var tableViewController = UITableViewController()
     
     // Sections
-    let sectionHeadings:[String] = ["Sensor Settings", "Image Settings", "Misc. Settings"]
-    let sectionRows:[Int] = [2, 2, 2]
+    let sectionHeadings:[String] = ["Sensor Settings", "Image Settings", "Misc. Settings", "Apply Settings"]
+    let sectionRows:[Int] = [2, 2, 2, 1]
     let sIndexSensor:Int = 0
     let sIndexImage:Int = 1
     let sIndexMisc:Int = 2
+    let sIndexApply:Int = 3
     
     // Sensors
     let rIndexSensorRead:Int = 0
@@ -32,12 +37,16 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     let rIndexImageCapture:Int = 0
     let rIndexImageDelay:Int = 1
     
-    // misc
+    // Misc
     let rIndexDisplayTime:Int = 0
     let rIndexBackgroundCheck:Int = 1
     
+    // Apply
+    let rIndexApplyButton:Int = 0
+    
     // Identifiers
     let sliderIdentifier:String = "SliderCell"
+    let buttonIdentifier:String = "ButtonCell"
     
     // Slider tags for reference
     let sliderTagTimeSensorRead:Int = 10
@@ -47,8 +56,9 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     let sliderTagTimeDisplayUpdate:Int = 14
     let sliderTagTimeBackgroundChecks:Int = 15
     
-    // Time Labels
+    // Variables/Objects mapped to slider tags
     var timeLabels:[Int: UILabel] = [Int: UILabel]()
+    var timeIncrements:[Int: Int] = [Int: Int]()
     
     // Firebase
     var ref: DatabaseReference!
@@ -84,6 +94,12 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Set up the loading view
+        self.loadingView.backgroundColor = colourDefault
+        self.loadingLabel.text = "Syncing..."
+        self.loadingIndicator.hidesWhenStopped = true
+        self.loadingView.alpha = 0
+        
         // Apply tableview to Table View Controller (needed to get rid of blank space)
         tableViewController.tableView = tableView
         
@@ -100,7 +116,7 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
             self.timeSensorRead = config?["time_between_sensor_reads"] as? Int ?? 60
             self.timeSensorUpload = config?["time_between_sensor_uploads"] as? Int ?? 900
             self.timeImageCapture = config?["time_between_image_captures"] as? Int ?? 60
-            self.timeImageDelay = config?["time_delay_bvefore_picture"] as? Int ?? 0
+            self.timeImageDelay = config?["time_delay_before_picture"] as? Int ?? 0
             self.timeDisplayUpdate = config?["time_between_display_updates"] as? Int ?? 10
             self.timeBackgroundChecks = config?["time_between_checks_background"] as? Int ?? 60
             
@@ -124,24 +140,93 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     // UI Updates
     
+    func startLoading() {
+        self.loadingIndicator.startAnimating()
+        self.loadingView.alpha = 1
+        Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(self.stopLoading), userInfo: nil, repeats: false)
+    }
+    
+    @objc func stopLoading() {
+        self.loadingIndicator.stopAnimating()
+        self.loadingView.alpha = 0
+    }
+    
+    func displayStringForTime(totalSeconds:Int) -> String {
+        // Convert from seconds to "Xm Ys"
+        let minutes = Int((Double(totalSeconds) / 60.0).rounded(.down))
+        let seconds = totalSeconds % 60
+        
+        var displayString = ""
+        if (minutes > 0) {
+            displayString = "\(minutes)m"
+            if (seconds > 0) {
+                displayString = displayString + " \(seconds)s"
+            }
+        } else {
+            displayString = "\(seconds)s"
+        }
+        
+        return displayString
+    }
+    
     @objc func sliderFinished(slider:UISlider) {
+        
+        // Figure out the increment
+        let increment:Float = Float(self.timeIncrements[slider.tag]!)        
+        // Round the seconds to the nearest increment
+        let rounded = Int(round(slider.value / increment) * increment)
+        
+        // Figure out which variable to update
         switch slider.tag {
         case self.sliderTagTimeSensorRead:
-            print("Sensor Read slider edit did end \(slider.value)")
+            self.timeSensorRead = rounded
+            print("timeSensorRead = \(self.timeSensorRead)")
+        case self.sliderTagTimeSensorUpload:
+            self.timeSensorUpload = rounded
+            print("timeSensorUpload = \(self.timeSensorUpload)")
+        case self.sliderTagTimeImageCapture:
+            self.timeImageCapture = rounded
+            print("timeImageCapture = \(self.timeImageCapture)")
+        case self.sliderTagTimeImageDelay:
+            self.timeImageDelay = rounded
+            print("timeImageDelay = \(self.timeImageDelay)")
+        case self.sliderTagTimeBackgroundChecks:
+            self.timeBackgroundChecks = rounded
+            print("timeBackgroundChecks = \(self.timeBackgroundChecks)")
+        case self.sliderTagTimeDisplayUpdate:
+            self.timeDisplayUpdate = rounded
+            print("timeDisplayUpdate = \(self.timeDisplayUpdate)")
         default:
             print("Unknown slider did end edit")
         }
     }
     
     @objc func sliderValueChanged(slider:UISlider) {
-        switch slider.tag {
-        case self.sliderTagTimeSensorRead:
-            print("Sensor Read slider changed \(slider.value)")
-            let rounded = roundf(slider.value / 5.0) * 5.0;
-            self.timeLabels[slider.tag]?.text = "\(Int(rounded))s"
-        default:
-            print("Unknown slider did end edit")
-        }
+        
+        // Figure out the increment
+        let increment:Float = Float(self.timeIncrements[slider.tag]!)
+        // Round the seconds to the nearest increment
+        let rounded = Int(round(slider.value / increment) * increment)
+        // Update the text beside the slider
+        self.timeLabels[slider.tag]?.text = displayStringForTime(totalSeconds: Int(rounded))
+        
+    }
+    
+    @objc func applyButtonTapped() {
+        print("Sync button tapped")
+        self.startLoading()
+        
+        let configDict = ["time_between_sensor_reads": self.timeSensorRead,
+                    "time_between_sensor_uploads": self.timeSensorUpload,
+                    "time_between_image_captures": self.timeImageCapture,
+                    "time_delay_before_picture": self.timeImageDelay,
+                    "time_between_display_updates": self.timeDisplayUpdate,
+                    "time_between_checks_background": self.timeBackgroundChecks]
+        
+        let childUpdates = ["config": configDict]
+        
+        ref.updateChildValues(childUpdates)
+        
     }
     
     // MARK: - Tableview methods
@@ -166,13 +251,20 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         return sectionHeadings[section]
     }
     
-    // Explicityly decide the sections and rows
+    func setUpSlider(slider:UISlider, min:Float, max:Float, tag:Int, currentValue:Float) {
+        slider.tintColor = colourDefault
+        slider.minimumValue = min
+        slider.maximumValue = max
+        slider.value = currentValue
+        slider.tag = tag
+        slider.addTarget(self, action: #selector(sliderValueChanged(slider:)), for: [UIControlEvents.valueChanged])
+        slider.addTarget(self, action: #selector(sliderFinished(slider:)), for: [UIControlEvents.touchUpInside, UIControlEvents.touchUpOutside])
+    }
+    
+    // Explicitly decide the sections and rows
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         var cell:UITableViewCell = UITableViewCell()
-        cell.isUserInteractionEnabled = true
-        cell.accessoryType = UITableViewCellAccessoryType.none
-        cell.selectionStyle = UITableViewCellSelectionStyle.none
         
         switch indexPath.section {
             
@@ -186,27 +278,21 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 cell = tableView.dequeueReusableCell(withIdentifier: sliderIdentifier) as UITableViewCell!
                 
                 // Grab the elements using the tag
-                let background = cell.viewWithTag(1) as? UIView
                 let textLabel = cell.viewWithTag(2) as? UILabel
                 let slider = cell.viewWithTag(3) as? UISlider
                 let timeLabel = cell.viewWithTag(4) as? UILabel
                 
                 // Set the elements
                 if let actTextLabel = textLabel {
-                    actTextLabel.text = "Time in seconds between sensor readings. Multiple sensor readings are averaged before uploading."
+                    actTextLabel.text = "Time between sensor readings. Multiple sensor readings are averaged before uploading."
                 }
                 if let actTimeLabel = timeLabel {
-                    actTimeLabel.text = "\(self.timeSensorRead)s"
+                    actTimeLabel.text = displayStringForTime(totalSeconds: self.timeSensorRead)
                     self.timeLabels[self.sliderTagTimeSensorRead] = actTimeLabel
                 }
                 if let actSlider = slider {
-                    actSlider.tintColor = colourDefault
-                    actSlider.minimumValue = Float(self.minTimeSensorRead)
-                    actSlider.maximumValue = Float(self.maxTimeSensorRead)
-                    actSlider.value = Float(self.timeSensorRead)
-                    actSlider.tag = self.sliderTagTimeSensorRead
-                    actSlider.addTarget(self, action: #selector(sliderValueChanged(slider:)), for: [UIControlEvents.valueChanged])
-                    actSlider.addTarget(self, action: #selector(sliderFinished(slider:)), for: [UIControlEvents.touchUpInside, UIControlEvents.touchUpOutside])
+                    setUpSlider(slider: actSlider, min: Float(self.minTimeSensorRead), max: Float(self.maxTimeSensorRead), tag: self.sliderTagTimeSensorRead, currentValue: Float(self.timeSensorRead))
+                    self.timeIncrements[self.sliderTagTimeSensorRead] = 30
                 }
                 
             case rIndexSensorUpload:
@@ -214,19 +300,25 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 cell = tableView.dequeueReusableCell(withIdentifier: sliderIdentifier) as UITableViewCell!
                 
                 // Grab the elements using the tag
-                let background = cell.viewWithTag(1) as? UIView
                 let textLabel = cell.viewWithTag(2) as? UILabel
                 let slider = cell.viewWithTag(3) as? UISlider
-                let textField = cell.viewWithTag(4) as? UITextView
+                let timeLabel = cell.viewWithTag(4) as? UILabel
                 
                 // Set the elements
                 if let actTextLabel = textLabel {
-                    actTextLabel.text = "Time in seconds between sensor uploads. This will be the increment between timestamps."
+                    actTextLabel.text = "Time between sensor uploads. This will be the increment between timestamps."
+                }
+                if let actTimeLabel = timeLabel {
+                    actTimeLabel.text = displayStringForTime(totalSeconds: self.timeSensorUpload)
+                    self.timeLabels[self.sliderTagTimeSensorUpload] = actTimeLabel
+                }
+                if let actSlider = slider {
+                    setUpSlider(slider: actSlider, min: Float(self.minTimeSensorUpload), max: Float(self.maxTimeSensorUpload), tag: self.sliderTagTimeSensorUpload, currentValue: Float(self.timeSensorUpload))
+                    self.timeIncrements[self.sliderTagTimeSensorUpload] = 60 * 5
                 }
                 
             default:
                 cell = UITableViewCell()
-                cell.isUserInteractionEnabled = false
             }
             
         case sIndexImage:
@@ -239,14 +331,21 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 cell = tableView.dequeueReusableCell(withIdentifier: sliderIdentifier) as UITableViewCell!
                 
                 // Grab the elements using the tag
-                let background = cell.viewWithTag(1) as? UIView
                 let textLabel = cell.viewWithTag(2) as? UILabel
                 let slider = cell.viewWithTag(3) as? UISlider
-                let textField = cell.viewWithTag(4) as? UITextView
+                let timeLabel = cell.viewWithTag(4) as? UILabel
                 
                 // Set the elements
                 if let actTextLabel = textLabel {
-                    actTextLabel.text = "Minimum number of seconds between image captures."
+                    actTextLabel.text = "Minimum time between image captures."
+                }
+                if let actTimeLabel = timeLabel {
+                    actTimeLabel.text = displayStringForTime(totalSeconds: self.timeImageCapture)
+                    self.timeLabels[self.sliderTagTimeImageCapture] = actTimeLabel
+                }
+                if let actSlider = slider {
+                    setUpSlider(slider: actSlider, min: Float(self.minTimeImageCapture), max: Float(self.maxTimeImageCapture), tag: self.sliderTagTimeImageCapture, currentValue: Float(self.timeImageCapture))
+                    self.timeIncrements[self.sliderTagTimeImageCapture] = 15
                 }
                 
             case rIndexImageDelay:
@@ -254,19 +353,25 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 cell = tableView.dequeueReusableCell(withIdentifier: sliderIdentifier) as UITableViewCell!
                 
                 // Grab the elements using the tag
-                let background = cell.viewWithTag(1) as? UIView
                 let textLabel = cell.viewWithTag(2) as? UILabel
                 let slider = cell.viewWithTag(3) as? UISlider
-                let textField = cell.viewWithTag(4) as? UITextView
+                let timeLabel = cell.viewWithTag(4) as? UILabel
                 
                 // Set the elements
                 if let actTextLabel = textLabel {
-                    actTextLabel.text = "Delay in seconds between detecting the door is open and taking the picture."
+                    actTextLabel.text = "Delay between detecting the door is open and taking the picture."
+                }
+                if let actTimeLabel = timeLabel {
+                    actTimeLabel.text = displayStringForTime(totalSeconds: self.timeImageDelay)
+                    self.timeLabels[self.sliderTagTimeImageDelay] = actTimeLabel
+                }
+                if let actSlider = slider {
+                    setUpSlider(slider: actSlider, min: Float(self.minTimeImageDelay), max: Float(self.maxTimeImageDelay), tag: self.sliderTagTimeImageDelay, currentValue: Float(self.timeImageDelay))
+                    self.timeIncrements[self.sliderTagTimeImageDelay] = 1
                 }
                 
             default:
                 cell = UITableViewCell()
-                cell.isUserInteractionEnabled = false
             }
         
         case sIndexMisc:
@@ -279,14 +384,21 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 cell = tableView.dequeueReusableCell(withIdentifier: sliderIdentifier) as UITableViewCell!
                 
                 // Grab the elements using the tag
-                let background = cell.viewWithTag(1) as? UIView
                 let textLabel = cell.viewWithTag(2) as? UILabel
                 let slider = cell.viewWithTag(3) as? UISlider
-                let textField = cell.viewWithTag(4) as? UITextView
+                let timeLabel = cell.viewWithTag(4) as? UILabel
                 
                 // Set the elements
                 if let actTextLabel = textLabel {
-                    actTextLabel.text = "Minimum number of seconds that each display message is shown for."
+                    actTextLabel.text = "Minimum time that each display message is shown for."
+                }
+                if let actTimeLabel = timeLabel {
+                    actTimeLabel.text = displayStringForTime(totalSeconds: self.timeDisplayUpdate)
+                    self.timeLabels[self.sliderTagTimeDisplayUpdate] = actTimeLabel
+                }
+                if let actSlider = slider {
+                    setUpSlider(slider: actSlider, min: Float(self.minTimeDisplayUpdate), max: Float(self.maxTimeDisplayUpdate), tag: self.sliderTagTimeDisplayUpdate, currentValue: Float(self.timeDisplayUpdate))
+                    self.timeIncrements[self.sliderTagTimeDisplayUpdate] = 5
                 }
                 
             case rIndexBackgroundCheck:
@@ -294,14 +406,21 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 cell = tableView.dequeueReusableCell(withIdentifier: sliderIdentifier) as UITableViewCell!
                 
                 // Grab the elements using the tag
-                let background = cell.viewWithTag(1) as? UIView
                 let textLabel = cell.viewWithTag(2) as? UILabel
                 let slider = cell.viewWithTag(3) as? UISlider
-                let textField = cell.viewWithTag(4) as? UITextView
+                let timeLabel = cell.viewWithTag(4) as? UILabel
                 
                 // Set the elements
                 if let actTextLabel = textLabel {
-                    actTextLabel.text = "Time in seconds between checking for images to process."
+                    actTextLabel.text = "Time between checking for images to process."
+                }
+                if let actTimeLabel = timeLabel {
+                    actTimeLabel.text = displayStringForTime(totalSeconds: self.timeBackgroundChecks)
+                    self.timeLabels[self.sliderTagTimeBackgroundChecks] = actTimeLabel
+                }
+                if let actSlider = slider {
+                    setUpSlider(slider: actSlider, min: Float(self.minTimeBackgroundChecks), max: Float(self.maxTimeBackgroundChecks), tag: self.sliderTagTimeBackgroundChecks, currentValue: Float(self.timeBackgroundChecks))
+                    self.timeIncrements[self.sliderTagTimeBackgroundChecks] = 60
                 }
                 
             default:
@@ -309,11 +428,38 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
                 cell.isUserInteractionEnabled = false
             }
             
+        case self.sIndexApply:
+            
+            // Apply section
+            switch indexPath.row {
+                
+            case rIndexApplyButton:
+                // Button Row
+                cell = tableView.dequeueReusableCell(withIdentifier: buttonIdentifier) as UITableViewCell!
+                
+                // Grab the elements using the tag
+                let button = cell.viewWithTag(90) as? UIButton
+                
+                // Set the elements
+                if let button = button {
+                    button.addTarget(self, action: #selector(applyButtonTapped), for: UIControlEvents.touchUpInside)
+                    button.setTitle("Sync to RPI", for: UIControlState())
+                    
+                    button.layer.backgroundColor = colourDefault.cgColor
+                    button.layer.cornerRadius = 2.5
+                }
+                
+            default:
+                cell = UITableViewCell()
+            }
+            
         default:
             cell = UITableViewCell()
-            cell.isUserInteractionEnabled = false
         }
         
+        cell.isUserInteractionEnabled = true
+        cell.accessoryType = UITableViewCellAccessoryType.none
+        cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell
         
     }
@@ -324,6 +470,7 @@ class SettingsVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
+    
     
     
 }
